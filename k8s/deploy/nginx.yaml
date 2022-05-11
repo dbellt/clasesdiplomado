@@ -1,0 +1,155 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    commit: "578"
+    affectedChannel: alguno
+    owner: diplomado
+    product: diplomado
+    tierApp: Backend
+    app: diplomado-re-v2-19-app
+    tier: backend
+    type: service
+    automationTest: "false"
+  name: diplomado-re-v2-19
+  namespace: diplomado
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: diplomado-re-v2-19-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 50%
+      maxUnavailable: 30%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        commit: "578"
+        affectedChannel: alguno
+        owner: diplomado
+        product: diplomado
+        tierApp: Backend
+        app: diplomado-re-v2-19-app
+        tier: backend
+        type: service
+        automationTest: "false"
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            -
+              labelSelector:
+                matchExpressions:
+                  -
+                    key: app
+                    operator: In
+                    values:
+                      - diplomado-re-v2-19-app
+              topologyKey: kubernetes.io/hostname
+      containers:
+      - env:
+        - name: PORT
+          value: "8080"
+        - name: T_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: tokensecret
+              key: token
+        - name: T_AUTHENTICATION
+          value: "TOKEN"
+        - name: T_TRUST_STORE
+          value: "file:/vol-ms/pubcerts.ts"
+        - name: MS_VERSION
+          value: "re-v2-19"
+        - name: FOR_GODS_SAKE_PLEASE_REDEPLOY
+          value: "Wed Feb 03 10:39:52 CLST 2021"
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              key: TZ
+              name: env-data
+        - name: JAVA_OPTS
+          value: "-Xms256m -Xmx256m"
+        - name: CONTEXT_PATH
+          value: "/v2.19"
+        envFrom:
+        - configMapRef:
+            name: env-global
+        livenessProbe:
+          httpGet:
+            path: /diplomado-re-v2-19-app/v2.19/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 90
+          periodSeconds: 10
+          timeoutSeconds: 10
+          failureThreshold: 21
+          successThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /diplomado-re-v2-19-app/v2.19/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 90
+          periodSeconds: 10
+          timeoutSeconds: 3
+          failureThreshold: 3
+          successThreshold: 1
+        image: diplomado-re-v2-19-app:re-v2-19-1-rc1
+        imagePullPolicy: IfNotPresent
+        name: diplomado-re-v2-19-node
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 608M
+          limits:
+            memory: 913M
+            cpu: 1000m
+        volumeMounts:
+        - mountPath: /vol-ms
+          name: ms-secret-vol
+          readOnly: true
+      imagePullSecrets:
+      - name: prd
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: ms-secret-vol
+        secret:
+          secretName: ms-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: diplomado-re-v2-19-svc
+  namespace: diplomado
+spec:
+  ports:
+  - name: diplomado-re-v2-19-port
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: diplomado-re-v2-19-app
+  type: ClusterIP
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: diplomado-re-v2-19
+  namespace: diplomado
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1beta1
+    kind: Deployment
+    name: diplomado-re-v2-19
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 70

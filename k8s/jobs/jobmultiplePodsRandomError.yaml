@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: random-error
+spec:
+  completions: 3
+  backoffLimit: 10 #cantidad maxima de intentos en 6 min crecimiento incremental(10, 20, 40)
+  template:
+    spec:
+      containers:
+      - name: random-error
+        image: dbellt/random-error
+      restartPolicy: Never
+

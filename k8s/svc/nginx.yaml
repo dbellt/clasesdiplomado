@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: nginx2
+  name: nginx
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: nginx2
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: nginx2
+    spec:
+      nodeSelector:
+        - minikube-m02
+      containers:
+      - image: nginx:1.7.1
+        name: nginx
+        ports:
+        - containerPort: 80        
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nginx2
+  name: nginx
+  namespace: default
+spec:
+  ports:
+  - nodePort: 31769
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: nginx2
+  sessionAffinity: None
+  type: LoadBalancer
+status:
+  loadBalancer:
+    ingress:

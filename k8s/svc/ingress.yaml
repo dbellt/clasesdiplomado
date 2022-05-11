@@ -1,0 +1,27 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minikube-example-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - host: minikube-example.com
+      http:
+        paths:
+          - path: /hello
+            pathType: Prefix
+            backend:
+              service:
+                name: hello-app
+                port:
+                  number: 8080
+          - path: /insights
+            pathType: Prefix
+            backend:
+              service:
+                name: insights-app
+                port:
+                  number: 80
+
