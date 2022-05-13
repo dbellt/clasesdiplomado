@@ -22,6 +22,38 @@ PUT /ejemplo8
 }
 
 
+# 
+
+PUT /usuarios
+
+{
+
+  "mappings": {
+
+    "properties": {
+
+      "nombre" : {"type": "text"},
+
+      "apellido" : {"type": "text"},
+
+      "edad" : {"type": "integer"},
+
+      "visitas" : {"type": "integer"},
+
+      "preferencial" : {"type": "text"},
+
+      "preferencial2" : {"type": "text"}
+
+    }
+
+  }
+
+  
+
+}
+
+
+
 
 
 
