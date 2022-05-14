@@ -1,2 +1,10 @@
 
 docker run --name fluentd -d -p 24224:24224 -p 24224:24224/udp  -v /Users/dbell/Dropbox/Diplomadousach/logsymonitoreo/fluentd/data/logs:/fluentd/log -v /Users/dbell/Dropbox/Diplomadousach/logsymonitoreo/fluentd/data/fluent.conf:/fluentd/etc/fluent.conf fluentd
+
+
+
+curl -X POST -d 'json={"foo":"bar"}' http://localhost:24224/app.log
+
+
+
+
