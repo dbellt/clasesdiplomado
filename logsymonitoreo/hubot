@@ -1,1 +1,27 @@
+npm install -g yo generator-hubot
+
+
+yo hubot
+
+
+# Owner
+# Bot Name
+# Description
+# Bot Adapter: slack
+#
+#
+#sustituir el token por el generado en su propio Slack
+HUBOT_SLACK_TOKEN=xoxb-14370111535246-2000823809110-FjX1Cm7pHGkMrVi1xqJ2dyfT ./bin/hubot --adapter slack
+
+
+ejemplo badger: 
+
+editar archivo:
+scripts > example.coffe
+
+
+module.exports = (robot) ->
+
+  robot.hear /badger/i, (res) ->
+    res.send "Badgers? BADGERS? WE DON'T NEED NO STINKIN BADGERS"
 
